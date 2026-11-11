@@ -11,11 +11,16 @@ Specification: [docs/storefront/ARCHITECTURE.md](../../docs/storefront/ARCHITECT
 
 **Status: skeleton.** A static export (`next build`) of one placeholder page: `src/app/` is the
 locked shim layer and `src/theme/` its placeholder. The starting themes are in `themes/{key}/`
-(#486): `baseline` ("Start from scratch", from `designs/DF Storefront Prototype`) and `linen`,
-`concrete`, `bloom`, `circuit`, `market` and `atelier` (from `designs/storefront-lib.js`). Each holds
+(#486): `classic`, `baseline` ("Start from scratch", from `designs/DF Storefront Prototype`) and, until #1218, `market`. Baseline is styled with Tailwind classes, its tokens in `src/theme/styles/theme.css` and its class constants in `src/theme/components/styles/` (#1239). Classic and market keep their CSS Modules: converted, classic's pages went over the 1 MB phone budget. Each holds
 `src/theme/**`, `content/en/*.json`, `routes.json` and `template.json` (the gallery's name, tag,
 description, demo store and the lowest core it runs on, mirrored by the `storefront_template`
 rows), and passes the validator, the preview bundle and the publish gate in
 `apps/sandbox/src/themes.test.ts`.
+
+**Running a store repo locally.** A store repo comes with `.npmrc` (core's registry) and a generated
+`.env.development` naming the store's own shop, which `next dev` proxies `/shop-api` to
+(`next.config.ts`). Once per machine, put a GitHub token with `read:packages` in your own `~/.npmrc`
+(`//npm.pkg.github.com/:_authToken=…`), never the repo's; then `pnpm install` and `pnpm dev`. Before
+pushing to `main`, which goes live by itself, run `pnpm check` (the repo's `AGENTS.md`, #974).
 
 `src/app/Shell.tsx` wraps pages in `StorefrontProvider` so `next dev` can render a theme. It is for local development only: `poweredBy` is `null` there. Shipped builds render through the sandbox, which sets it from the store's snapshot (`apps/sandbox/src/publish/render.ts`).
